@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="myBean" class="bean.GreetingService"></bean>
+    <bean id="EmailNotificationService" class="loose.EmailNotificationService"></bean>
+    <bean id="SMSService" class="loose.SMSService"></bean>
+    <bean id="userServiceEmail" class="loose.UserService">
+        <!--It is using setter injection-->
+        <property name="notificationService" ref="EmailNotificationService"></property>
+    </bean>
+    <bean id="userServiceSMS" class="loose.UserService">
+<!--        <property name="notificationService" ref="SMSService"></property>-->
+        <!--It is using constructor injection-->
+        <constructor-arg ref="SMSService"></constructor-arg>
+    </bean>
+</beans>
