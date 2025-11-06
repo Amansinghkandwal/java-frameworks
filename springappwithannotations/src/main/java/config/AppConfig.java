@@ -30,5 +30,4 @@ public class AppConfig {
 //    @Component = automatic bean detection through classpath scanning.
 //    @Bean = manual bean creation inside a configuration class.
 
-
 }

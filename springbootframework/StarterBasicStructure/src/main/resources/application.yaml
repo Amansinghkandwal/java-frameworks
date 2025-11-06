@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: spring-boot
+server:
+  port: 8080
+#go to spring website and check appendix -> common application properties to check all the properties
+
