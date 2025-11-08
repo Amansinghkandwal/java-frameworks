@@ -2,14 +2,14 @@ package com.example.spring_boot.controller;
 
 
 import com.example.spring_boot.model.User;
+import com.example.spring_boot.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+
 
 /*
   Response Entity -> we need to improve the api responses to tell the correct status
@@ -22,42 +22,40 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private Map<Integer, User> userDb = new HashMap<>();
+    private UserService userService = new UserService();
+
+
 
     @PostMapping
     //we are doing a post request -> request->(requestHeader , requestBody)
     public ResponseEntity<User> createUser(@RequestBody User user)
     {
-
-       if(!userDb.containsKey(user.getId())) {
-           userDb.put(user.getId(), user);
-           System.out.println(user.getEmail());
-//           return ResponseEntity.status(HttpStatus.CREATED)
-//                   .body(user);
-           return new ResponseEntity<>(user,HttpStatus.OK);
-       }
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(user);
-        //body("user already present") we should always send object in response not a String so that we can get more information
+        User createdUser= userService.createUser(user);
+        if(createdUser==null){
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping
    public ResponseEntity<User> updateUser(@RequestBody User user)
    {
-       if(userDb.containsKey(user.getId())) {
-           userDb.put(user.getId(), user);
-
-//           return new ResponseEntity<>(user,HttpStatus.OK);
-           return ResponseEntity.ok(user);
+       User updated = userService.updateUser(user);
+       if(updated==null)
+       {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
        }
-       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+       return ResponseEntity.ok(user);
    }
 
    @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable int id)
    {
-       if(userDb.containsKey(id)) {
-           userDb.remove(id);
-           return new ResponseEntity<>(userDb.get(id),HttpStatus.OK);
+       boolean isDeleted = userService.deleteUser(id);
+       if(isDeleted)
+       {
+           return ResponseEntity.noContent().build();
        }
 
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -66,7 +64,7 @@ public class UserController {
    @GetMapping
     public List<User> getUsers()
    {
-       return new ArrayList<>(userDb.values());
+      return userService.getAllUsers();
    }
 
   //@GetMapping({"/user","/user/{id}"}) if you want to map two different urls to a single method
@@ -74,8 +72,10 @@ public class UserController {
    @GetMapping("/{userId}")
    public ResponseEntity<User> getUser(@PathVariable("userId") int id)
    {
-       if(userDb.containsKey(id)) {
-           return ResponseEntity.ok(userDb.get(id));
+       User user =userService.getUserById(id);
+
+       if(user!=null) {
+           return ResponseEntity.ok(user);
        }
        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
    }
@@ -86,9 +86,10 @@ public class UserController {
             @PathVariable("userId") int id,
             @PathVariable("orderId") int order)
     {
-        System.out.println("ORDER ID: "+order);
-        if(userDb.containsKey(id)) {
-            return ResponseEntity.ok(userDb.get(id));
+        User user =userService.getUserById(id);
+
+        if(user!=null) {
+            return ResponseEntity.ok(user);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -110,11 +111,8 @@ public class UserController {
     )
     {
         System.out.println(name);
-        List<User> users = userDb.values().stream()
-                .filter(u->u.getName().equalsIgnoreCase(name))
-                .filter(u->u.getEmail().equalsIgnoreCase(email))
-                .toList();
-        return ResponseEntity.ok(users);
+
+        return ResponseEntity.ok(userService.searchUsers(name,email));
     }
 
     @GetMapping("/info/{id}")
@@ -127,4 +125,5 @@ public class UserController {
                 +" : "+id
                 +" : "+name;
     }
+
 }

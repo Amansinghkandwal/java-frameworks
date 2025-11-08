@@ -2,10 +2,9 @@ package com.example.spring_boot.controller;
 
 
 import com.example.spring_boot.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+
 
 
 //jackson library is converting this mapping into JSON format
@@ -56,4 +55,5 @@ public class HelloController {
         |
     Response ->Tomcat
      */
+
 }

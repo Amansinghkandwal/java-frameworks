@@ -3,5 +3,10 @@ spring:
     name: spring-boot
 server:
   port: 8080
+
+logging:
+  level:
+    root: WARN
+#You can control the logging level
 #go to spring website and check appendix -> common application properties to check all the properties
 
